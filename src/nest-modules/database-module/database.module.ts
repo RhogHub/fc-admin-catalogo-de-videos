@@ -38,7 +38,7 @@ const models = [CategoryModel];
                 );
             },
             inject: [ConfigService],
-        }),
+        }),    
     ],    
 })
 export class DatabaseModule {}

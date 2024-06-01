@@ -4,7 +4,7 @@ import Joi from 'joi';
 import { join } from 'path';
 
 type DB_SCHEMA_TYPE = {
-    DB_VENDOR: 'mysql' | 'sqlite',
+    DB_VENDOR: 'mysql' | 'sqlite';
     DB_HOST: string;
     DB_PORT: number;
     DB_USERNAME: string;
@@ -35,7 +35,7 @@ export const CONFIG_DB_SCHEMA: Joi.StrictSchemaMap<DB_SCHEMA_TYPE> = {
     }),
     DB_LOGGING: Joi.boolean().required(),
     DB_AUTO_LOAD_MODELS: Joi.boolean().required(),
-}
+};
 
 export type CONFIG_SCHEMA_TYPE = DB_SCHEMA_TYPE;
 
@@ -46,8 +46,8 @@ export class ConfigModule extends NestConfigModule {
         return super.forRoot({
             isGlobal: true,
             envFilePath: [
-                ...(Array.isArray(envFilePath) ? envFilePath : [envFilePath]),
-                join(process.cwd(), 'envs', `.env.${process.env.NODE_ENV}`),
+                ...(Array.isArray(envFilePath) ? envFilePath! : [envFilePath!]),
+                join(process.cwd(), 'envs', `.env.${process.env.NODE_ENV!}`),
                 join(process.cwd(), 'envs', `.env`),
             ],
             validationSchema: Joi.object({
