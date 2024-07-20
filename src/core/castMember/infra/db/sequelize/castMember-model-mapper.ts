@@ -1,6 +1,6 @@
-import { CastMember } from "@core/castMember/domain/castMember.aggregate";
 import { EntityValidationError } from "../../../../shared/domain/validators/validation.error";
 import { Uuid } from "../../../../shared/domain/value-objects/uuid.vo";
+import { CastMember } from "@core/castMember/domain/castMember.aggregate";
 import { CastMemberModel } from "./castMember-model";
 
 export class CastMemberModelMapper {
@@ -13,7 +13,11 @@ export class CastMemberModelMapper {
         });
     }
 
-    static toEntity(model: CastMemberModel): CastMember {
+    static toEntity(model: CastMemberModel | null): CastMember | null {
+        if (!model) {
+            return null;
+        }
+        
         const castMember = new CastMember({
             castMember_id: new Uuid(model.castMember_id),
             name: model.name,           
