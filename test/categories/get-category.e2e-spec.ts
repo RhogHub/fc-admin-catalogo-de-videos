@@ -4,10 +4,9 @@ import { ICategoryRepository } from '../../src/core/category/domain/category.rep
 import * as CategoryProviders from '../../src/nest-modules/categories-module/categories.providers';
 import { startApp } from '../../src/nest-modules/shared-module/testing/helpers';
 import { CategoriesController } from '../../src/nest-modules/categories-module/categories.controller';
-
 import { GetCategoryFixture } from '../../src/nest-modules/categories-module/testing/category-fixture';
 import { CategoryOutputMapper } from '@core/category/application/use-case/common/category-output';
-import { Category } from '@core/category/domain/category.entity';
+import { Category } from '@core/category/domain/category.aggregate';
 
 describe('CategoriesController (e2e)', () => {
     const nestApp = startApp();

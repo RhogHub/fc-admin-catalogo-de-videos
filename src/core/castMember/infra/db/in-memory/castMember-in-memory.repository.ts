@@ -15,7 +15,7 @@ export class CastMemberInMemoryRepository
         }
       
         return items.filter((i) => {
-            return i.name.toLowerCase().includes(filter.name.toLowerCase());
+            return i.name.toLowerCase().includes(filter.toLowerCase());
         });
     }
     

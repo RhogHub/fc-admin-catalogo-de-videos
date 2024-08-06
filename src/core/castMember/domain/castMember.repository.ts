@@ -2,12 +2,13 @@ import { ISearchableRepository } from "../../shared/domain/repository/repository
 import { SearchParams } from "../../shared/domain/repository/search-params";
 import { SearchResult } from "../../shared/domain/repository/search-result";
 import { Uuid } from "../../shared/domain/value-objects/uuid.vo";
-import { CastMember, CastMemberType } from "./castMember.aggregate";
+import { CastMember } from "./castMember.aggregate";
 
-export type CastMemberFilter = {
-    name?: string | null;
-    type?: CastMemberType | null;
-};
+// export type CastMemberFilter = {
+//     name?: string | null;
+//     type?: string | null;
+// };
+export type CastMemberFilter = string;
 
 export class CastMemberSearchParams extends SearchParams<CastMemberFilter>{}
 

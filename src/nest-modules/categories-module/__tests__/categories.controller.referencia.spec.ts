@@ -27,7 +27,7 @@ describe('CategoriesController', () => {
   });
 
   it('should be defined', () => {
-    console.log(controller);
+    //console.log(controller);
 
     expect(controller).toBeDefined();
   });

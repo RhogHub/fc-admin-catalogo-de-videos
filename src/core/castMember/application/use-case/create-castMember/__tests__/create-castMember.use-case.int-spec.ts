@@ -16,7 +16,7 @@ describe("CreateCastMemberUseCase Integration Tests", () => {
         useCase = new CreateCastMemberUseCase(repository);
     });
 
-    it("should create a category", async () => {
+    it("should create a cast member", async () => {
         const director = CastMemberType.DIRECTOR;
         const actor = CastMemberType.ACTOR;
         let output = await useCase.execute({ name: "test", type: actor, });
