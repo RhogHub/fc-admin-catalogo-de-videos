@@ -11,7 +11,7 @@ export type CastMemberModelProps = {
 @Table({ tableName: 'cast_members', timestamps: false })
 export class CastMemberModel extends Model<CastMemberModelProps> {
     @PrimaryKey
-    @Column({ type: DataType.UUID })
+    @Column({ allowNull: false, type: DataType.UUID })
     declare castMember_id: string;
 
     @Column({ allowNull: false, type: DataType.STRING(255) })
@@ -19,7 +19,6 @@ export class CastMemberModel extends Model<CastMemberModelProps> {
 
     @Column({ allowNull: false, type: DataType.INTEGER })
     declare type: CastMemberType;
-
 
     @Column({ allowNull: false, type: DataType.DATE(3) })
     declare created_at: Date;

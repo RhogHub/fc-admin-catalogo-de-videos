@@ -1,7 +1,7 @@
 import { CastMemberFilter, ICastMemberRepository } from "@core/castMember/domain/castMember.repository";
 import { SortDirection } from "../../../../shared/domain/repository/search-params";
 import { InMemorySearchableRepository } from "../../../../shared/infra/db/in-memory/in-memory.repository";
-import { CastMember, CastMemberId } from "@core/castMember/domain/castMember.aggregate";
+import { CastMember, CastMemberId, CastMemberType } from "@core/castMember/domain/castMember.aggregate";
 
 export class CastMemberInMemoryRepository 
     extends InMemorySearchableRepository<CastMember, CastMemberId, CastMemberFilter>
@@ -12,11 +12,15 @@ export class CastMemberInMemoryRepository
     protected async applyFilter(items: CastMember[], filter: CastMemberFilter | null): Promise<CastMember[]> {
         if (!filter) {
             return items;
-        }
+        }       
       
-        return items.filter((i) => {
-            return i.name.toLowerCase().includes(filter.toLowerCase());
-        });
+        const filterLowerCase = filter.toLowerCase();
+
+        return items.filter((item) => {
+            const typeMatch = CastMemberType[item.type]?.toString().toLowerCase() === filterLowerCase;
+            const nameMatch = item.name.toLowerCase().includes(filterLowerCase);
+            return typeMatch || nameMatch;
+        });   
     }
     
     getEntity(): new (...args: any[]) => CastMember {
