@@ -94,6 +94,21 @@ describe('ListCastMembersUseCase Integration Tests', () => {
             per_page: 2,
             last_page: 2,            
         });
+
+        output = await useCase.execute({
+            page: 1,
+            per_page: 2,
+            sort: 'name',
+            sort_dir: 'desc',
+            filter: 'actor',
+        });
+        expect(output).toStrictEqual({
+            items: [items[0], items[1]].map(CastMemberOutputMapper.toOutput),
+            total: 2,
+            current_page: 1,
+            per_page: 2,
+            last_page: 1,            
+        });
     });
 
 });

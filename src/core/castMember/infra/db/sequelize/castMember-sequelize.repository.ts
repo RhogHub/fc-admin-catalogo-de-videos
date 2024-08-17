@@ -20,21 +20,32 @@ export class CastMemberSequelizeRepository implements ICastMemberRepository {
     async search(props: CastMemberSearchParams): Promise<CastMemberSearchResult> {
         const offset = (props.page - 1) * props.per_page;
         const limit = props.per_page;
-
+    
+        const filterConditions: any = {};
+    
+        if (props.filter) {
+            switch (props.filter) {
+                case 'director':
+                    filterConditions.type = 1;
+                    break;
+                case 'actor':
+                    filterConditions.type = 2;
+                    break;
+                default:
+                    filterConditions.name = { [Op.like]: `%${props.filter}%` };
+                    break;
+            }
+        }
+    
         const { rows: models, count } = await this.castMemberModel.findAndCountAll({
-            ...(props.filter && {
-                where: {
-                    name: { [Op.like]: `%${props.filter}%` },
-                },
-            }),
+            where: filterConditions,
             ...(props.sort && this.sortableFields.includes(props.sort)
-                ? //? { order: [[props.sort, props.sort_dir]] }
-                    { order: this.formatSort(props.sort, props.sort_dir!) }
+                ? { order: this.formatSort(props.sort, props.sort_dir!) }
                 : { order: [['created_at', 'desc']] }),
             offset,
             limit,
         });
-
+    
         return new CastMemberSearchResult({
             items: models.map((model) => {
                 return CastMemberModelMapper.toEntity(model);

@@ -7,7 +7,7 @@ import { CastMember } from "./castMember.aggregate";
 // export type CastMemberFilter = {
 //     name?: string | null;
 //     type?: string | null;
-// };
+// }
 export type CastMemberFilter = string;
 
 export class CastMemberSearchParams extends SearchParams<CastMemberFilter>{}

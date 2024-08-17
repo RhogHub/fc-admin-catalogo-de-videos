@@ -6,6 +6,7 @@ import { Uuid } from "@core/shared/domain/value-objects/uuid.vo";
 import { NotFoundError } from "@core/shared/domain/errors/not-found.error";
 import { CastMemberModelMapper } from "../castMember-model-mapper";
 import { CastMemberSearchParams, CastMemberSearchResult } from "@core/castMember/domain/castMember.repository";
+import { SearchParams } from "@core/shared/domain/repository/search-params";
 
 describe("CastMemberSequelizeRepository Integration Test", () => {
     let repository: CastMemberSequelizeRepository;
@@ -211,13 +212,170 @@ describe("search method tests", () => {
             }).toJSON(true)
         );
 
+        searchOutput = await repository.search(
+            new CastMemberSearchParams({
+                page: 1,
+                per_page: 2,
+                filter: "director",
+            })
+        );
+        
+        expect(searchOutput.toJSON(true)).toMatchObject(
+            new CastMemberSearchResult({
+                items: [castMembers[3], castMembers[4]],
+                total: 2,
+                current_page: 1,                
+                per_page: 2,
+            }).toJSON(true)
+        );
     });
 
-    // it("should apply paginate and sort", async () => {
-    //     expect(repository.sortableFields).toStrictEqual(["name", "created_at"]);
-    // });
+    it("should apply paginate and sort", async () => {
+        expect(repository.sortableFields).toStrictEqual(["name", "created_at"]);
+
+        const castMembers = [
+            new CastMember({ name: "a", type: CastMemberType.ACTOR }),
+            new CastMember({ name: "AAA", type: CastMemberType.ACTOR }),
+            new CastMember({ name: "AaA", type: CastMemberType.ACTOR }),
+            new CastMember({ name: "b", type: CastMemberType.DIRECTOR }),  
+            new CastMember({ name: "c", type: CastMemberType.DIRECTOR }),          
+        ];
+        await repository.bulkInsert(castMembers);
+
+        const arrange = [
+            {
+                params: new CastMemberSearchParams({
+                    page: 1,
+                    per_page: 2,
+                    sort: "name",                    
+                }),
+                result: new CastMemberSearchResult({
+                    items: [castMembers[1],castMembers[2]],
+                    total: 5,
+                    current_page: 1,
+                    per_page: 2,
+                }),
+            },
+            {
+                params: new CastMemberSearchParams({
+                    page: 2,
+                    per_page: 2,
+                    sort: "name",                    
+                }),
+                result: new CastMemberSearchResult({
+                    items: [castMembers[0],castMembers[3]],
+                    total: 5,
+                    current_page: 2,
+                    per_page: 2,
+                }),
+            },
+            {
+                params: new CastMemberSearchParams({
+                    page: 1,
+                    per_page: 2,
+                    sort: "name", 
+                    sort_dir: "desc",                   
+                }),
+                result: new CastMemberSearchResult({
+                    items: [castMembers[4],castMembers[3]],
+                    total: 5,
+                    current_page: 1,
+                    per_page: 2,
+                }),
+            },
+        ];
+        for (const i of arrange) {
+            const result = await repository.search(i.params);
+            expect(result.toJSON(true)).toMatchObject(i.result.toJSON(true));
+        }
+    });
+
 });
 
-// describe("should search using filter, sort and paginate", () => {
+describe("should search using filter, sort and paginate", () => {
+    const director = CastMemberType.DIRECTOR;
+    const actor = CastMemberType.ACTOR;
+    const castMembers = [
+        new CastMember({ name: "Test", type: director }),
+        new CastMember({ name: "TEST", type: actor }),
+        new CastMember({ name: "a", type: actor }),
+        new CastMember({ name: "test", type: director }),
+        new CastMember({ name: "tt", type: actor }),
+    ];
 
-// });
+    const arrange = [
+        {
+            search_params: new CastMemberSearchParams({
+                page: 1,
+                per_page: 2,
+                sort: "name",
+                filter: "TEST",
+            }),
+            search_result: new CastMemberSearchResult({
+                items: [castMembers[1],castMembers[0]],
+                total: 3,
+                current_page: 1,
+                per_page: 2,
+            }),
+        },
+        {
+            search_params: new CastMemberSearchParams({
+                page: 2,
+                per_page: 2,
+                sort: "name",
+                filter: "TEST",
+            }),
+            search_result: new CastMemberSearchResult({
+                items: [castMembers[3]],
+                total: 3,
+                current_page: 2,
+                per_page: 2,
+            }),
+        },
+        {
+            search_params: new CastMemberSearchParams({
+                page: 1,
+                per_page: 2,
+                sort: "name",
+                filter: "actor",
+            }),
+            search_result: new CastMemberSearchResult({
+                items: [castMembers[1],castMembers[2]],
+                total: 3,
+                current_page: 1,
+                per_page: 2,
+            }),
+        },
+        {
+            search_params: new CastMemberSearchParams({
+                page: 2,
+                per_page: 2,
+                sort: "name",
+                filter: "actor",
+            }),
+            search_result: new CastMemberSearchResult({
+                items: [castMembers[4]],
+                total: 3,
+                current_page: 2,
+                per_page: 2,
+            }),
+        },
+    ];
+
+    let repository: CastMemberSequelizeRepository;
+    setupSequelize({ models: [CastMemberModel] });
+
+    beforeEach(async () => {        
+        repository = new CastMemberSequelizeRepository(CastMemberModel);
+        await repository.bulkInsert(castMembers);
+    });   
+
+    test.each(arrange)(
+        "when value is $search_params",
+        async ({ search_params, search_result }) => {
+            const result = await repository.search(search_params);
+            expect(result.toJSON(true)).toMatchObject(search_result.toJSON(true));
+        }
+    );
+
+});
